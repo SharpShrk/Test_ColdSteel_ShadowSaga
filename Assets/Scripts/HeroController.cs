@@ -8,22 +8,21 @@ public class HeroController : MonoBehaviour
     [SerializeField] private float _moveSpeed = 8f;
     [SerializeField] private float _horizontalJumpForce = 5f;
     [SerializeField] private float _verticalJumpForce = 10f;
-
-    [Header("Time Slowdown")]
-    [SerializeField] private float _slowdownFactor = 0.5f;
-    [SerializeField] private float _slowdownDuration = 1f;
+    [SerializeField] private float _movementAcceleration = 3f;
 
     [Header("References")]
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private Weapon _weapon;
     [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private TimeManager _timeManager;
+    [SerializeField] private Animator _animator;
 
+    private float _currentDirection;
     private Rigidbody2D _rigidbody2D;
     private PlayerInputSystem _input;
     private Camera _mainCamera;
     private Vector2 _cursorPosition;
     private bool _isGrounded;
-    private bool _canMove;
     private float _groundCheckRadius = 0.05f;
 
     private void Awake()
@@ -47,14 +46,20 @@ public class HeroController : MonoBehaviour
 
     private void Update()
     {
-        if (_isGrounded) HandleMovement();
+        if (_isGrounded)
+            HandleMovement();
 
         UpdateCursorPosition();
         RotateTowardsCursor();
         HandleShooting();
         CheckGround();
+        UpdateAnimationState();
+    }
 
-        Debug.Log(_canMove);
+    private void UpdateAnimationState()
+    {
+        bool isMoving = Mathf.Abs(_currentDirection) > Mathf.Epsilon;
+        _animator.SetBool("IsMove", isMoving);
     }
 
     private void UpdateCursorPosition()
@@ -72,10 +77,13 @@ public class HeroController : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (!_isGrounded) return;
-
         float direction = _input.Player.Move.ReadValue<Vector2>().x;
-        _rigidbody2D.velocity = new Vector2(direction * _moveSpeed, _rigidbody2D.velocity.y);
+        _currentDirection = direction;
+
+        Vector2 targetVelocity = new Vector2(direction * _moveSpeed, _rigidbody2D.velocity.y);
+        Vector2 velocityChange = (targetVelocity - _rigidbody2D.velocity);
+
+        _rigidbody2D.AddForce(velocityChange * _movementAcceleration);
     }
 
     private void CheckGround()
@@ -85,25 +93,16 @@ public class HeroController : MonoBehaviour
             _groundCheckRadius,
             _groundLayer
         );
-
-        if (_isGrounded)
-        {
-            _canMove = true;
-        }
     }
 
     private void OnJump(InputAction.CallbackContext context)
     {
         if (!_isGrounded) return;
 
-        _canMove = false;
-
         float direction = Mathf.Sign(transform.localScale.x);
-
         _rigidbody2D.velocity = new Vector2(0, _rigidbody2D.velocity.y);
         _rigidbody2D.AddForce(new Vector2(direction * _horizontalJumpForce, _verticalJumpForce), ForceMode2D.Impulse);
-
-        TimeManager.Instance.ActivateSlowdown(_slowdownFactor, _slowdownDuration);
+        _timeManager.ActivateSlowdown();
     }
 
     private void HandleShooting()

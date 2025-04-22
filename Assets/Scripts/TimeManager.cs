@@ -1,30 +1,31 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 public class TimeManager : MonoBehaviour
 {
-    public static TimeManager Instance { get; private set; }
+    [Header("Slowdown Settings")]
+    [SerializeField] private float _slowdownFactor = 0.3f;
+    [SerializeField] private float _slowdownDuration = 2f;
 
     private float _defaultFixedDeltaTime;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
         _defaultFixedDeltaTime = Time.fixedDeltaTime;
     }
 
-    public void ActivateSlowdown(float slowdownFactor, float duration)
+    public void ActivateSlowdown()
     {
         StopAllCoroutines();
-        StartCoroutine(SlowdownRoutine(slowdownFactor, duration));
+        StartCoroutine(SlowdownRoutine());
     }
 
-    private IEnumerator SlowdownRoutine(float factor, float duration)
+    private IEnumerator SlowdownRoutine()
     {
-        Time.timeScale = factor;
-        Time.fixedDeltaTime = _defaultFixedDeltaTime * factor;
+        Time.timeScale = _slowdownFactor;
+        Time.fixedDeltaTime = _defaultFixedDeltaTime * _slowdownFactor;
 
-        yield return new WaitForSecondsRealtime(duration);
+        yield return new WaitForSecondsRealtime(_slowdownDuration);
 
         Time.timeScale = 1f;
         Time.fixedDeltaTime = _defaultFixedDeltaTime;
