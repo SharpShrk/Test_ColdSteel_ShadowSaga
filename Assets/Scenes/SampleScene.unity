@@ -385,6 +385,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 113f6a553b166be4eac89137248ff358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _slowdownFactor: 0.3
+  _slowdownDuration: 2
 --- !u!4 &1757722984
 Transform:
   m_ObjectHideFlags: 0
@@ -400,6 +402,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &2896266120130228608 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6406292026812175485, guid: f72f65374f6ab0e4394d64663e120636, type: 3}
+  m_PrefabInstance: {fileID: 7572314546894429634}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7572314546894429634
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -412,6 +419,14 @@ PrefabInstance:
       propertyPath: _weapon
       value: 
       objectReference: {fileID: 1653067816}
+    - target: {fileID: 732279073287101527, guid: f72f65374f6ab0e4394d64663e120636, type: 3}
+      propertyPath: _animator
+      value: 
+      objectReference: {fileID: 2896266120130228608}
+    - target: {fileID: 732279073287101527, guid: f72f65374f6ab0e4394d64663e120636, type: 3}
+      propertyPath: _timeManager
+      value: 
+      objectReference: {fileID: 1757722983}
     - target: {fileID: 732279073287101527, guid: f72f65374f6ab0e4394d64663e120636, type: 3}
       propertyPath: _slowdownFactor
       value: 0.3
